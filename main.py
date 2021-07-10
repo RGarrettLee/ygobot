@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix=(prefix))
 async def on_ready():
     print(bot.user.name, 'logged in')
     print('----------------')
-    await bot.change_presence(activity=discord.Game(name='Yu-Gi-Oh! TCG', type=3))
+    await bot.change_presence(activity=discord.Game(name='Yu-Gi-Oh! TCG | .help', type=3))
 
 bot.remove_command('help')
 
