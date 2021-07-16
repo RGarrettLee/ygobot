@@ -8,7 +8,7 @@ from discord.ext import commands
 
 class Elo(commands.Cog):
     def __init__(self, bot):
-        self.elo = Elo(k=20)
+        pass
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -37,14 +37,13 @@ class Elo(commands.Cog):
         if (not user.id in users):
             self.elo.addPlayer(str(user.id), 1000)
             users[user.id] = {}
-            users[user.id]['eloRating'] = self.elo.ratingDict[str(user.id)]
+            users[user.id]['eloRating'] = elo.ratingDict[str(user.id)]
     
     async def probability(self, p1, p2):
-        return elo.expectResult(self.elo.ratingDict[p1], self.elo.ratingDict[p2])
+        return elo.expectResult(elo.ratingDict[p1], self.elo.ratingDict[p2])
 
     async def eloUpdate(self, p1, p2):
-        gameOver(winner = p1, loser = p2, winnerHome = 0)
-
+        elo.gameOver(winner = p1, loser = p2, winnerHome = 0)
         with open(r'users.json', 'r') as f:
             users = json.load(f)
 
