@@ -17,3 +17,9 @@ newPlayerRating('Sidewinder')
 newPlayerRating('alex')
 
 print(eloUpdate('Sidewinder', 'alex'))
+
+print(eloLeague.ratingDict)
+
+test = ('Sidewinder', 'Alex')
+
+print(test[0])
