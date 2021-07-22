@@ -32,10 +32,6 @@ class CardList(commands.Cog):
     def extractSets(self):
         for i in range(len(self.sets)):
             name = self.sets[i]['set_name'].lower()
-            name = name.replace('structure deck:', '')
-            name = name.replace('structure deck', '')
-            name = name.replace('starter deck', '')
-            name = name.replace('starter deck:', '')
             name = name.strip()
             self.setDB[name] = name.replace(' ', '%20')
             self.setDB[name] = name.replace("'", '%27')

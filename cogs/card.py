@@ -37,15 +37,21 @@ class Card(commands.Cog):
                 embed.set_footer(text='Banlist Status: {0}'.format(cardData['data'][0]['banlist_info']['ban_tcg']))
             except:
                 embed.set_footer(text='Banlist Status: Unlimited')
+
+            setPrices = '**__Card Prices:__**\n'
+
+            for i in range(len(cardData['data'][0]['card_sets'])):
+                setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'], cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
+
             embed.set_thumbnail(url=cardData['data'][0]['card_images'][0]['image_url'])
             if ('Trap' not in cardData['data'][0]['type'] and 'Spell' not in cardData['data'][0]['type']):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**Attribute: {0} | Level: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['level']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 else: embed.add_field(name='**Attribute: {0} | Link Rating: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['linkval']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 embed.add_field(name='**Card Description**', value=cardData['data'][0]['desc'], inline=False)
-                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value='__Card Price: {0}$__'.format(cardData['data'][0]['card_prices'][0]['tcgplayer_price']), inline=False)
-                else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value='__Card Price: {0}$__'.format(cardData['data'][0]['card_prices'][0]['tcgplayer_price']), inline=False)
+                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=setPrices, inline=False)
+                else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=setPrices, inline=False)
             else:
-                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n__Card Price: {1}$__'.format(cardData['data'][0]['desc'], cardData['data'][0]['card_prices'][0]['tcgplayer_price']), inline=False)
+                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices), inline=False)
             await message.edit(content='Retrieved {0}'.format(cardData['data'][0]['name']), embed=embed)
         except:
             await message.edit(content='Invalid card entered')
