@@ -45,13 +45,7 @@ class Card(commands.Cog):
                     setPrices = '__Card Price: {0}__'.format(cardData['data'][0]['card_prices'][0]['tcgplayer_price'])
                     break
                 else:
-                    if ('Duel Terminal' in cardData['data'][0]['card_sets'][i]['set_rarity']):
-                        fix = cardData['data'][0]['card_sets'][i]['set_rarity'].replace('Duel Terminal', '')
-                        fix = fix.replace('Parallel', '')
-                        fix = fix.split()
-                        setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], fix, cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
-                    else:
-                        setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'].replace('Duel Terminal', ''), cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
+                    setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'].replace('Duel Terminal', ''), cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
 
             embed.set_thumbnail(url=cardData['data'][0]['card_images'][0]['image_url'])
             if ('Trap' not in cardData['data'][0]['type'] and 'Spell' not in cardData['data'][0]['type']):
