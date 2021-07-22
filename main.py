@@ -22,7 +22,7 @@ bot.remove_command('help')
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title='Help', description='All the functions this bot can do', color=0x0000ff)
-    embed.add_field(name='{0}card (name)'.format(prefix), value='Brings up information about specified card', inline=False)
+    embed.add_field(name='{0}card (name)'.format(prefix), value='Brings up information about a specified card', inline=False)
     embed.add_field(name='{0}staples'.format(prefix), value='Brings up current staples in the game', inline=False)
     embed.add_field(name='{0}banlist'.format(prefix), value='Brings up the current TCG banlist', inline=False)
     embed.add_field(name='{0}.cardList/list (set name)'.format(prefix), value='Displays the cards in a specified set or structure/starter deck', inline=False)
