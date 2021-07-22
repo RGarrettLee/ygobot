@@ -79,7 +79,7 @@ class CardList(commands.Cog):
             for i in range(len(productData['data'])):
                 for j in range(len(productData['data'][i]['card_sets'])):
                     if (product == productData['data'][i]['card_sets'][j]['set_name'].lower()):
-                        setCards.append('{0}: **{1}**'.format(productData['data'][i]['name'], productData['data'][i]['card_sets'][0]['set_rarity']))
+                        setCards.append('{0}: **{1}**'.format(productData['data'][i]['name'], productData['data'][i]['card_sets'][j]['set_rarity']))
 
             out = ''
             for i in range(len(setCards)):
