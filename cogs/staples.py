@@ -54,6 +54,7 @@ class Staples(commands.Cog):
 
     @commands.command()
     async def staples(self, ctx):
+        self.page = 1
         message = await ctx.send('Retrieving staples...')
 
         embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)

@@ -60,6 +60,7 @@ class Banlist(commands.Cog):
 
     @commands.command()
     async def banlist(self, ctx):
+        self.page = 0
         message = await ctx.send('Retrieving the banlist...')
 
         embed = discord.Embed(title='Banlist', color=0x0000ff)
