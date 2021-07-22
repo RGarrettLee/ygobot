@@ -43,7 +43,7 @@ class CardList(commands.Cog):
         user = await self.bot.fetch_user(payload.user_id)
         emoji = payload.emoji.name
 
-        if ((emoji == '\N{Leftwards Black Arrow}' or emoji == '\N{Black Rightwards Arrow}') and not str(user) == 'The Chesapeake Ripper Bot#6294'):
+        if ((emoji == '\N{Leftwards Black Arrow}' or emoji == '\N{Black Rightwards Arrow}') and not str(user) == 'YugiBot#5373'):
             if (message.id == self.msgID):
                 if (emoji == '\N{Leftwards Black Arrow}' and self.page >= 0):
                     self.page -= 1
