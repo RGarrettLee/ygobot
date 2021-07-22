@@ -76,8 +76,7 @@ class CardList(commands.Cog):
             for i in range(len(productData['data'][0]['card_sets'])):
                 if (product == productData['data'][0]['card_sets'][i]['set_name'].lower()):
                     self.currentSet = productData['data'][0]['card_sets'][i]['set_name']
-            for i in range(len(productData['data'])):
-                setCards.append('{0}: **{1}**'.format(productData['data'][i]['name'], productData['data'][i]['card_sets'][0]['set_rarity']))
+                    setCards.append('{0}: **{1}**'.format(productData['data'][i]['name'], productData['data'][i]['card_sets'][i]['set_rarity']))
 
             out = ''
             for i in range(len(setCards)):
