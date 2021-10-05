@@ -4,7 +4,7 @@ This is a discord bot made for Yu-Gi-Oh! Servers that want to add search functio
 
 ## Inviting to your own server   
 
-Currently the bot is private but will be made public evenutally
+[Invite to your server](https://discord.com/api/oauth2/authorize?client_id=863285321360736266&permissions=0&scope=bot)
 
 ## Author
 - Garrett Lee
