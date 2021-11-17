@@ -7,7 +7,7 @@ from discord.ext import commands
 
 class Card(commands.Cog):
     api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?name='
-    db = 'db.ygoprodeck.com/card/?search='
+    db = 'https://db.ygoprodeck.com/card/?search='
 
     def __init__(self, bot):
         self.bot = bot
