@@ -36,11 +36,15 @@ class Card(commands.Cog):
             cardData = requests.get(self.makeUrl(card)).json()
             dblink = self.dbLink(card)
 
-            embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
+            #embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
+            #try:
+            #    embed.set_author(name='Archetype: {0}'.format(cardData['data'][0]['archetype']))
+            #except:
+            #    pass
             try:
-                embed.set_author(name='Archetype: {0}'.format(cardData['data'][0]['archetype']))
+                embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), description='Archetype: {0}'.format(cardData['data'][0]['archetype']), color=0x0000ff)
             except:
-                pass
+                embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
             try:
                 embed.set_footer(text='Banlist Status: {0}'.format(cardData['data'][0]['banlist_info']['ban_tcg']))
             except:
