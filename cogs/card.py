@@ -10,13 +10,19 @@ class Card(commands.Cog):
     db = 'db.ygoprodeck.com/card/?search='
 
     def __init__(self, bot):
-        pass
+        self.bot = bot
 
     def makeUrl(self, card):
         space = card.replace(' ', '%20')
         aps = space.replace("'", '%27')
         amp = aps.replace('&', '%26')
         return self.api + amp
+
+    def dbLink(self, card):
+        space = card.replace(' ', '%20')
+        aps = space.replace("'", '%27')
+        amp = aps.replace('&', '%26')
+        return self.db + amp
 
     def tupleConvert(self, word):
         str = ' '.join(word)
@@ -28,7 +34,7 @@ class Card(commands.Cog):
             message = await ctx.send('Retrieving card...')
             card = self.tupleConvert(arg)
             cardData = requests.get(self.makeUrl(card)).json()
-            dblink = self.db + self.makeUrl(card).lower()
+            dblink = self.dbLink(card)
 
             embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
             try:
