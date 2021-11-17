@@ -61,10 +61,10 @@ class Card(commands.Cog):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**Attribute: {0} | Level: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['level']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 else: embed.add_field(name='**Attribute: {0} | Link Rating: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['linkval']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 embed.add_field(name='**Card Description**', value=cardData['data'][0]['desc'], inline=False)
-                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=f'\n**DB Link:** {dblink}\n{setPrices}', inline=False)
-                else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=f'\n**DB Link:** {dblink}\n{setPrices}', inline=False)
+                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=setPrices, inline=False)
+                else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=setPrices, inline=False)
             else:
-                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n**DB Link:** {2}\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
+                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
             await message.edit(content='Retrieved {0}'.format(cardData['data'][0]['name']), embed=embed)
         except:
             await message.edit(content='Invalid card entered')
