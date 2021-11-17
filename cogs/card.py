@@ -63,7 +63,7 @@ class Card(commands.Cog):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=f'\nDB Link: {dblink}\n\n{setPrices}', inline=False)
                 else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=setPrices, inline=False)
             else:
-                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n\n{0}\n\nDB Link: {2}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
+                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\nDB Link: {2}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
             await message.edit(content='Retrieved {0}'.format(cardData['data'][0]['name']), embed=embed)
         except:
             await message.edit(content='Invalid card entered')
