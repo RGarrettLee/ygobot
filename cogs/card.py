@@ -7,6 +7,7 @@ from discord.ext import commands
 
 class Card(commands.Cog):
     api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?name='
+    db = 'db.ygoprodeck.com/card/?search='
 
     def __init__(self, bot):
         pass
@@ -27,6 +28,7 @@ class Card(commands.Cog):
             message = await ctx.send('Retrieving card...')
             card = self.tupleConvert(arg)
             cardData = requests.get(self.makeUrl(card)).json()
+            dblink = self.db + self.makeUrl(card).lower()
 
             embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
             try:
@@ -52,10 +54,10 @@ class Card(commands.Cog):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**Attribute: {0} | Level: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['level']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 else: embed.add_field(name='**Attribute: {0} | Link Rating: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['linkval']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 embed.add_field(name='**Card Description**', value=cardData['data'][0]['desc'], inline=False)
-                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=setPrices, inline=False)
+                if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=f'DB Link: {dblink}\n{setPrices}', inline=False)
                 else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=setPrices, inline=False)
             else:
-                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices), inline=False)
+                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\nDB Link: {2}\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
             await message.edit(content='Retrieved {0}'.format(cardData['data'][0]['name']), embed=embed)
         except:
             await message.edit(content='Invalid card entered')
