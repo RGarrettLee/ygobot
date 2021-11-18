@@ -48,10 +48,11 @@ class Card(commands.Cog):
             cardData = requests.get(self.makeUrl(card)).json()
             dblink = '{0}{1}'.format(self.ygorg, self.cardIDs[card])
 
+            embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), url=dblink, color=0x0000ff)
             try:
-                embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), description='Archetype: {0}'.format(cardData['data'][0]['archetype']), color=0x0000ff)
+                embed.set_author(name='Archetype: {0}'.format(cardData['data'][0]['archetype']))
             except:
-                embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), color=0x0000ff)
+                pass
             try:
                 embed.set_footer(text='Banlist Status: {0}'.format(cardData['data'][0]['banlist_info']['ban_tcg']))
             except:
@@ -67,7 +68,6 @@ class Card(commands.Cog):
                     setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'], cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
 
             embed.set_thumbnail(url=cardData['data'][0]['card_images'][0]['image_url'])
-            embed.set_author(name='YGOrg Link', url=dblink)
             if ('Trap' not in cardData['data'][0]['type'] and 'Spell' not in cardData['data'][0]['type']):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**Attribute: {0} | Level: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['level']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
                 else: embed.add_field(name='**Attribute: {0} | Link Rating: {1}**'.format(cardData['data'][0]['attribute'], cardData['data'][0]['linkval']), value='**[ {0} / {1} ]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Monster', '')), inline=False)
