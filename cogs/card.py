@@ -4,6 +4,7 @@ import requests
 import json
 import time
 import io
+from fuzzywuzzy import process
 from discord.ext import commands
 
 class Card(commands.Cog):
@@ -14,6 +15,10 @@ class Card(commands.Cog):
     def loadData(self):
         with open('cardIDs.json', 'r') as f:
             self.cardIDs = json.loads(f.read())
+        self.names = []
+
+        for i in self.cardIDs:
+            self.names.append(i)
 
     def __init__(self, bot):
         self.bot = bot
@@ -40,13 +45,14 @@ class Card(commands.Cog):
         try:
             message = await ctx.send('Retrieving card...')
             card = self.tupleConvert(arg)
-            if ('infernoble arms' in card):
-                card = f'"{card}"'
-            if ('a cell' in card):
-                temp = card.replace('a', '')
-                card = f'"a"{temp}'
-            cardData = requests.get(self.makeUrl(card)).json()
-            dblink = '{0}{1}'.format(self.ygorg, self.cardIDs[card])
+
+            highest = process.extractOne(card, self.names)
+            newCard = highest[0]
+            print(card)
+            print(newCard)
+
+            cardData = requests.get(self.makeUrl(newCard)).json()
+            dblink = '{0}{1}'.format(self.ygorg, self.cardIDs[newCard])
 
             embed = discord.Embed(title='**{0}**'.format(cardData['data'][0]['name']), url=dblink, color=0x0000ff)
             try:
