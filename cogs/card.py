@@ -48,8 +48,6 @@ class Card(commands.Cog):
 
             highest = process.extractOne(card, self.names)
             newCard = highest[0]
-            print(card)
-            print(newCard)
 
             cardData = requests.get(self.makeUrl(newCard)).json()
             dblink = '{0}{1}'.format(self.ygorg, self.cardIDs[newCard])
