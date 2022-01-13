@@ -26,7 +26,8 @@ class Card(commands.Cog):
 
     def makeUrl(self, card):
         space = card.replace(' ', '%20')
-        aps = space.replace("'", '%27')
+        bracket = space.replace('/', '%2F')
+        aps = bracket.replace("'", '%27')
         amp = aps.replace('&', '%26')
         return self.api + amp
 
@@ -39,6 +40,11 @@ class Card(commands.Cog):
     def tupleConvert(self, word):
         str = ' '.join(word)
         return str.lower()
+    
+    @commands.command(aliases=['update'])
+    async def reload(self, ctx):
+        await ctx.send("Card ID's updated")
+        self.loadData()
 
     @commands.command()
     async def card(self, ctx, *arg):
@@ -64,12 +70,12 @@ class Card(commands.Cog):
 
             setPrices = '**__Card Prices:__**\n'
 
-            for i in range(len(cardData['data'][0]['card_sets'])):
-                if (len(setPrices) >= 900):
-                    setPrices = '__Card Price: {0}__'.format(cardData['data'][0]['card_prices'][0]['tcgplayer_price'])
-                    break
-                else:
-                    setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'], cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
+            #for i in range(len(cardData['data'][0]['card_sets'])):
+            #    if (len(setPrices) >= 700):
+            setPrices = '__Card Price: {0}__'.format(cardData['data'][0]['card_prices'][0]['tcgplayer_price'])
+            #        break
+            #    else:
+            #        setPrices = setPrices + '__{0} - *{1}*: {2}$__'.format(cardData['data'][0]['card_sets'][i]['set_name'], cardData['data'][0]['card_sets'][i]['set_rarity'], cardData['data'][0]['card_sets'][i]['set_price']) + '\n'
 
             embed.set_thumbnail(url=cardData['data'][0]['card_images'][0]['image_url'])
             if ('Trap' not in cardData['data'][0]['type'] and 'Spell' not in cardData['data'][0]['type']):
@@ -79,7 +85,7 @@ class Card(commands.Cog):
                 if (not 'Link' in cardData['data'][0]['type']): embed.add_field(name='**ATK: {0} / DEF: {1}**'.format(cardData['data'][0]['atk'], cardData['data'][0]['def']), value=setPrices, inline=False)
                 else: embed.add_field(name='**ATK: {0}**'.format(cardData['data'][0]['atk']), value=setPrices, inline=False)
             else:
-                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace('Card', '')), value='**Card Description**\n{0}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
+                embed.add_field(name='**[{0} {1}]**'.format(cardData['data'][0]['race'], cardData['data'][0]['type'].replace(' Card', '')), value='**Card Description**\n{0}\n\n{1}'.format(cardData['data'][0]['desc'], setPrices, dblink), inline=False)
             await message.edit(content='Retrieved {0}'.format(cardData['data'][0]['name']), embed=embed)
         except:
             await message.edit(content='Error, please report this to <@!174263950685372417> with exact command you used')
