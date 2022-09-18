@@ -7,30 +7,10 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 class arrowButton(Button):
-    def loadStaples(self):
-        data = requests.get(self.api).json()
-
-        for i in range(len(data['data'])):
-            self.names.append(data['data'][i]['name'])
-
-        page = ''
-        count = 0
-        for i in range(len(self.names)):
-            page += f'{self.names[i]}\n'
-            count += 1
-            if (count == 20):
-                count = 0
-                self.pages.append(page)
-                page = ''
-        self.pages.append(page)
-
-    def __init__(self, label):
+    def __init__(self, label, pages):
         super().__init__(label=label, style=discord.ButtonStyle.secondary)
-        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes'
-        self.names = []
-        self.pages = []
+        self.pages = pages
         self.page = 1
-        self.loadStaples()
 
     async def callback(self, interaction):
         embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
@@ -63,12 +43,6 @@ class Staples(commands.Cog):
         view = View()
         message = await ctx.send('Retrieving staples...')
 
-        nextPage = arrowButton(label='Next Page')
-        previousPage = arrowButton(label='Previous Page')
-
-        view.add_item(nextPage)
-        view.add_item(previousPage)
-
         count = 0
         names = []
         data = requests.get(self.api).json()
@@ -86,6 +60,12 @@ class Staples(commands.Cog):
                 pages.append(page)
                 page = ''
         pages.append(page)
+
+        nextPage = arrowButton(label='Next Page', pages=pages)
+        previousPage = arrowButton(label='Previous Page', pages=pages)
+
+        view.add_item(nextPage)
+        view.add_item(previousPage)
 
         embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
         embed.add_field(name='Card List:', value=pages[0], inline=False)

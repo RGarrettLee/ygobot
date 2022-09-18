@@ -1,3 +1,4 @@
+from tkinter import PAGES
 import discord
 import os
 import requests
@@ -6,30 +7,10 @@ import time
 from discord.ext import commands
 from discord.ui import Button, View
 class arrowButton(Button):
-    def loadBanlist(self):
-        data = requests.get(self.api).json()
-
-        for i in range(len(data['data'])):
-            self.names.append('{0}: **{1}**'.format(data['data'][i]['name'], data['data'][i]['banlist_info']['ban_tcg']))
-
-        page = ''
-        count = 0
-        for i in range(len(self.names) - 1):
-            page += f'{self.names[i]}\n'
-            count += 1
-            if (count == 20):
-                count = 0
-                self.pages.append(page)
-                page = ''
-        self.pages.append(page)
-
-    def __init__(self, label):
+    def __init__(self, label, pages):
         super().__init__(label=label, style=discord.ButtonStyle.secondary)
-        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?banlist=tcg'
-        self.names = []
-        self.pages = []
+        self.pages = pages
         self.page = 1
-        self.loadBanlist()
 
     async def callback(self, interaction):
         embed = discord.Embed(title='**Banlist**', color=0x0000ff)
@@ -61,14 +42,6 @@ class Banlist(commands.Cog):
         view = View()
         message = await ctx.send('Retrieving the banlist...')
 
-        nextPage = arrowButton(label='Next Page')
-        previousPage = arrowButton(label='Previous Page')
-        banlistLink = Button(label='View Banlist', style=discord.ButtonStyle.link, url='https://www.yugioh-card.com/en/limited/', emoji='📄')
-
-        view.add_item(nextPage)
-        view.add_item(previousPage)
-        view.add_item(banlistLink)
-
         count = 0
         names = []
         data = requests.get(self.api).json()
@@ -86,6 +59,14 @@ class Banlist(commands.Cog):
                 pages.append(page)
                 page = ''
         pages.append(page)
+
+        nextPage = arrowButton(label='Next Page', pages=pages)
+        previousPage = arrowButton(label='Previous Page', pages=pages)
+        banlistLink = Button(label='View Banlist', style=discord.ButtonStyle.link, url='https://www.yugioh-card.com/en/limited/', emoji='📄')
+
+        view.add_item(nextPage)
+        view.add_item(previousPage)
+        view.add_item(banlistLink)
 
         embed = discord.Embed(title='**Banlist**', color=0x0000ff)
         embed.add_field(name='Card List:', value=pages[0], inline=False)
