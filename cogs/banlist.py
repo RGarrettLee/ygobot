@@ -4,73 +4,94 @@ import requests
 import json
 import time
 from discord.ext import commands
-
-class Banlist(commands.Cog):
-    api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?banlist=tcg'
-    msgID = 0
-
-    def __init__(self, bot):
-        self.bot = bot
-        self.names = []
-        self.pages = []
+from discord.ui import Button, View
+class arrowButton(Button):
+    def loadBanlist(self):
         data = requests.get(self.api).json()
 
         for i in range(len(data['data'])):
             self.names.append('{0}: **{1}**'.format(data['data'][i]['name'], data['data'][i]['banlist_info']['ban_tcg']))
 
-        out = ''
-        self.page = 0
+        page = ''
+        count = 0
+        for i in range(len(self.names) - 1):
+            page += f'{self.names[i]}\n'
+            count += 1
+            if (count == 20):
+                count = 0
+                self.pages.append(page)
+                page = ''
+        self.pages.append(page)
 
-        for i in range(len(self.names)):
-            if (i % 30 == 0):
-                self.pages.append(out)
+    def __init__(self, label):
+        super().__init__(label=label, style=discord.ButtonStyle.secondary)
+        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?banlist=tcg'
+        self.names = []
+        self.pages = []
+        self.page = 1
+        self.loadBanlist()
+
+    async def callback(self, interaction):
+        embed = discord.Embed(title='**Banlist**', color=0x0000ff)
+        if (self.label == 'Previous Page'):
+            if (self.page > 1):
+                self.page -= 1
+                for i in self.view.children:
+                    if (i.label == 'Next Page'):
+                        i.page = self.page
+        elif (self.label == 'Next Page'):
+            if (self.page < len(self.pages)):
                 self.page += 1
-                out = ''
-            else:
-                out = out + self.names[i] + '\n'
-        self.pages.append(out)
-        self.pages.pop(0)
-        self.page = 0
+                for i in self.view.children:
+                    if (i.label == 'Previous Page'):
+                        i.page = self.page
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        channel = await self.bot.fetch_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        user = await self.bot.fetch_user(payload.user_id)
-        emoji = payload.emoji.name
+        embed.add_field(name='Card List', value=self.pages[self.page - 1], inline=False)
+        embed.set_footer(text=f'Page {self.page}/{len(self.pages)}')
+        await interaction.response.edit_message(embed=embed)
 
-        if ((emoji == '\N{Leftwards Black Arrow}' or emoji == '\N{Black Rightwards Arrow}') and not str(user) == 'YugiBot#5373'):
-            if (message.id == self.msgID):
-                if (emoji == '\N{Leftwards Black Arrow}' and self.page >= 0):
-                    self.page -= 1
-                    if (self.page <= 0): self.page = 0
-                    embed = discord.Embed(title='Banlist', color=0x0000ff)
-                    embed.add_field(name='Card List:', value=self.pages[self.page], inline=False)
-                    embed.set_footer(text='Page {0}/{1}'.format(self.page + 1, len(self.pages)))
-                    await message.edit(embed=embed)
-                    await message.remove_reaction(emoji, user)
-                elif (emoji == '\N{Black Rightwards Arrow}' and self.page < len(self.pages)):
-                    self.page += 1
-                    if (self.page == len(self.pages)): self.page = len(self.pages) - 1
-                    embed = discord.Embed(title='Banlist', color=0x0000ff)
-                    embed.add_field(name='Card List:', value=self.pages[self.page], inline=False)
-                    embed.set_footer(text='Page {0}/{1}'.format(self.page + 1, len(self.pages)))
-                    await message.edit(embed=embed)
-                    await message.remove_reaction(emoji, user)
+class Banlist(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?banlist=tcg'
 
     @commands.command()
     async def banlist(self, ctx):
-        self.page = 0
+        """See all the cards on the banlist"""
+        view = View()
         message = await ctx.send('Retrieving the banlist...')
 
-        embed = discord.Embed(title='Banlist', color=0x0000ff)
-        embed.add_field(name='Card List:', value=self.pages[0], inline=False)
-        embed.set_footer(text='Page 1/{0}'.format(len(self.pages)))
+        nextPage = arrowButton(label='Next Page')
+        previousPage = arrowButton(label='Previous Page')
+        banlistLink = Button(label='View Banlist', style=discord.ButtonStyle.link, url='https://www.yugioh-card.com/en/limited/', emoji='📄')
 
-        await message.edit(content='Retrieved the banlist', embed=embed)
-        await message.add_reaction('\N{Leftwards Black Arrow}')
-        await message.add_reaction('\N{Black Rightwards Arrow}')
-        self.msgID = message.id
+        view.add_item(nextPage)
+        view.add_item(previousPage)
+        view.add_item(banlistLink)
+
+        count = 0
+        names = []
+        data = requests.get(self.api).json()
+
+        for i in range(len(data['data'])):
+            names.append('{0}: **{1}**'.format(data['data'][i]['name'], data['data'][i]['banlist_info']['ban_tcg']))
+
+        page = ''
+        pages = []
+        for i in range(len(names) - 1):
+            page += f'{names[i]}\n'
+            count += 1
+            if (count == 20):
+                count = 0
+                pages.append(page)
+                page = ''
+        pages.append(page)
+
+        embed = discord.Embed(title='**Banlist**', color=0x0000ff)
+        embed.add_field(name='Card List:', value=pages[0], inline=False)
+        embed.set_footer(text=f'Page 1/{len(pages)}')
+
+        await message.edit(content='Retrieved the banlist', embed=embed, view=view)
 
 def setup(bot):
     bot.add_cog(Banlist(bot))

@@ -4,67 +4,94 @@ import requests
 import json
 import time
 from discord.ext import commands
+from discord.ui import Button, View
 
-class Staples(commands.Cog):
-    api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes'
-    tcgplayer = 'https://www.tcgplayer.com/search/yugioh/product?productLineName=yugioh&productName='
-    msgID = 0
-    page = 1
-
-    def __init__(self, bot):
-        self.bot = bot
-        self.names = []
+class arrowButton(Button):
+    def loadStaples(self):
         data = requests.get(self.api).json()
 
         for i in range(len(data['data'])):
             self.names.append(data['data'][i]['name'])
 
-        self.page1 = ''
-        self.page2 = ''
-
+        page = ''
+        count = 0
         for i in range(len(self.names)):
-            if (i <= (len(self.names) / 2)):
-                self.page1 = self.page1 + self.names[i] + '\n'
-            else:
-                self.page2 = self.page2 + self.names[i] + '\n'
+            page += f'{self.names[i]}\n'
+            count += 1
+            if (count == 20):
+                count = 0
+                self.pages.append(page)
+                page = ''
+        self.pages.append(page)
 
-    @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        channel = await self.bot.fetch_channel(payload.channel_id)
-        message = await channel.fetch_message(payload.message_id)
-        user = await self.bot.fetch_user(payload.user_id)
-        emoji = payload.emoji.name
+    def __init__(self, label):
+        super().__init__(label=label, style=discord.ButtonStyle.secondary)
+        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes'
+        self.names = []
+        self.pages = []
+        self.page = 1
+        self.loadStaples()
 
-        if ((emoji == '\N{Leftwards Black Arrow}' or emoji == '\N{Black Rightwards Arrow}') and not str(user) == 'YugiBot#5373'):
-            if (message.id == self.msgID):
-                if (emoji == '\N{Leftwards Black Arrow}' and self.page == 2):
-                    embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
-                    embed.set_footer(text='Page 1/2')
-                    embed.add_field(name='Card List:', value=self.page1, inline=False)
-                    await message.edit(embed=embed)
-                    await message.remove_reaction(emoji, user)
-                    self.page = 1
-                elif (emoji == '\N{Black Rightwards Arrow}' and self.page == 1):
-                    embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
-                    embed.set_footer(text='Page 2/2')
-                    embed.add_field(name='Card List:', value=self.page2, inline=False)
-                    await message.edit(embed=embed)
-                    await message.remove_reaction(emoji, user)
-                    self.page = 2
+    async def callback(self, interaction):
+        embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
+        if (self.label == 'Previous Page'):
+            if (self.page > 1):
+                self.page -= 1
+                for i in self.view.children: # updates pages between buttons memory
+                    if (i.label == 'Next Page'):
+                        i.page = self.page
+        elif (self.label == 'Next Page'):
+            if (self.page < len(self.pages)):
+                self.page += 1
+                for i in self.view.children:
+                    if (i.label == 'Previous Page'):
+                        i.page = self.page
+        
+        embed.add_field(name='Card List', value=self.pages[self.page - 1], inline=False)
+        embed.set_footer(text=f'Page {self.page}/{len(self.pages)}')
+        await interaction.response.edit_message(embed=embed)
+
+
+class Staples(commands.Cog):
+    def __init__(self, bot):
+        self.api = 'https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes'
+        self.bot = bot
 
     @commands.command()
     async def staples(self, ctx):
-        self.page = 1
+        """See staple cards"""
+        view = View()
         message = await ctx.send('Retrieving staples...')
 
-        embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
-        embed.add_field(name='Card List:', value=self.page1, inline=False)
-        embed.set_footer(text='Page 1/2')
+        nextPage = arrowButton(label='Next Page')
+        previousPage = arrowButton(label='Previous Page')
 
-        await message.edit(content='Retrieved staple cards', embed=embed)
-        await message.add_reaction('\N{Leftwards Black Arrow}')
-        await message.add_reaction('\N{Black Rightwards Arrow}')
-        self.msgID = message.id
+        view.add_item(nextPage)
+        view.add_item(previousPage)
+
+        count = 0
+        names = []
+        data = requests.get(self.api).json()
+
+        for i in range(len(data['data'])):
+            names.append(data['data'][i]['name'])
+
+        page = ''
+        pages = []
+        for i in range(len(names)):
+            page += f'{names[i]}\n'
+            count += 1
+            if (count == 20):
+                count = 0
+                pages.append(page)
+                page = ''
+        pages.append(page)
+
+        embed = discord.Embed(title='**Staple Cards**', color=0x0000ff)
+        embed.add_field(name='Card List:', value=pages[0], inline=False)
+        embed.set_footer(text=f'Page 1/{len(pages)}')
+
+        await message.edit(content='Retrieved staple cards', embed=embed, view=view)
 
 def setup(bot):
     bot.add_cog(Staples(bot))
