@@ -17,7 +17,7 @@
 
 ## Bugs
 
-If there are any bugs you can enocunter you can feel free to open an issue here on github or DM me about it on discord -> Sidewinder#4682
+If there are any bugs you enocunter you can feel free to open an issue here on github or DM me about it on discord -> Sidewinder#4682
 
 ## Author
 - Garrett Lee
