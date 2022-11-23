@@ -2,7 +2,7 @@
 
 ## Developed for the [Remote Duel Brotherhood](https://discord.gg/t58kYqrDYS)
 
-> *but the bot can be used in any server so feel free to add it to your own server
+> *but the bot can be used in any server so feel free to add it to your own server*
 
 ## Features
 
